@@ -8,7 +8,7 @@
 
     <div class="navbar-end">
       <AppThemeToggle />
-      <NuxtLink class="btn btn-accent ml-2">
+      <NuxtLink class="btn btn-accent">
         Sign In<Icon name="tabler:brand-github" size="24" />
       </NuxtLink>
     </div>
