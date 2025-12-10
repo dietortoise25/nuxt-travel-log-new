@@ -8,6 +8,13 @@
       "when": 1765234181494,
       "tag": "0000_early_doomsday",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1765332991934,
+      "tag": "0001_glorious_loki",
+      "breakpoints": true
     }
   ]
 }
