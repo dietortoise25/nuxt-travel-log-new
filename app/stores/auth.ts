@@ -3,13 +3,17 @@ import { createAuthClient } from "better-auth/vue";
 const authClient = createAuthClient();
 
 export const useAuthStore = defineStore("authStore", () => {
-  const session = authClient.useSession();
-  const user = computed(() => session.value.data?.user);
-  const loading = ref(false);
+  const session = ref<Awaited<ReturnType<typeof authClient.useSession>> | null>(null);
+
+  async function init() {
+    const data = await authClient.useSession(useFetch);
+    session.value = data;
+  }
+
+  const user = computed(() => session.value?.data?.user);
+  const loading = computed(() => session.value?.isPending);
 
   async function signIn() {
-    loading.value = true;
-    await nextTick();
     try {
       await authClient.signIn.social({
         provider: "github",
@@ -20,9 +24,6 @@ export const useAuthStore = defineStore("authStore", () => {
     catch (error) {
       console.error("Failed to load providers:", error);
     }
-    finally {
-      loading.value = false;
-    }
   }
 
   async function signOut() {
@@ -31,6 +32,7 @@ export const useAuthStore = defineStore("authStore", () => {
   }
 
   return {
+    init,
     loading,
     signIn,
     user,
