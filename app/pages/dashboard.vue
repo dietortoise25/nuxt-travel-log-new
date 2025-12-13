@@ -34,13 +34,13 @@ function toggleSidebar() {
         <SidebarButton :show-label="isSidebarOpen" label="Add Location" icon="tabler:square-plus" href="/dashboard/add" />
 
         <div class="divider" />
-        <SidebarButton :show-label="isSidebarOpen" label="Sign Out" icon="tabler:logout" href="sign-out" />
+        <SidebarButton :show-label="isSidebarOpen" label="Sign Out" icon="tabler:logout" href="/sign-out" />
       </div>
     </div>
 
     <!-- main -->
     <div class="flex-1">
-      main
+      <NuxtPage />
     </div>
   </div>
 </template>
