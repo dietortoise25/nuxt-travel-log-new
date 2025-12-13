@@ -16,7 +16,8 @@ const route = useRoute();
       </div>
     </div>
     <NuxtLink
-      :to="props.href" class="flex gap-2 p-2 hover:bg-base-300 hover:cursor-pointer flex-nowrap"
+      :to="props.href"
+      class="flex gap-2 p-2 hover:bg-base-300 hover:cursor-pointer flex-nowrap"
       :class="{ 'bg-base-200': route.path === props.href, 'justify-center': !showLabel, 'justify-start': showLabel }"
     >
       <Icon :name="props.icon" size="24" />
