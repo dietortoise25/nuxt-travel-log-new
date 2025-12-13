@@ -1,14 +1,10 @@
 import type { LibsqlError } from "@libsql/client";
 import type { DrizzleQueryError } from "drizzle-orm";
 
-import { and, eq } from "drizzle-orm";
-import { customAlphabet } from "nanoid";
 import slugify from "slug";
 
-import db from "../db";
-import { InsertLocation, location } from "../db/schema";
-
-const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 5);
+import { findLocationByName, findUniqueSlug, insertLocation } from "../db/queries/location";
+import { InsertLocation } from "../db/schema";
 
 export default defineEventHandler(async (event) => {
   if (!event.context.user) {
@@ -43,12 +39,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // 检查用户是否已创建同名位置
-  const existingLocation = await db.query.location.findFirst({
-    where: and(
-      eq(location.name, result.data.name),
-      eq(location.userId, event.context.user.id),
-    ),
-  });
+  const existingLocation = await findLocationByName(result.data, event.context.user.id);
 
   if (existingLocation) {
     return sendError(event, createError({
@@ -58,30 +49,10 @@ export default defineEventHandler(async (event) => {
   }
 
   // 生成唯一 slug
-  let slug = slugify(result.data.name);
-  let existingSlug = !!(await db.query.location.findFirst({
-    where: eq(location.slug, slug),
-  }));
-
-  while (existingSlug) {
-    const id = nanoid();
-    const idSlug = `${slug}-${id}`;
-    existingSlug = !!(await db.query.location.findFirst({
-      where: eq(location.slug, idSlug),
-    }));
-    if (!existingSlug) {
-      slug = idSlug;
-    }
-  }
+  const slug = await findUniqueSlug(slugify(result.data.name));
 
   try {
-    const [created] = await db.insert(location).values({
-      ...result.data,
-      userId: event.context.user.id,
-      slug,
-    }).returning();
-
-    return created;
+    return insertLocation(result.data, slug, event.context.user.id);
   }
   catch (e) {
     const error = e as DrizzleQueryError;
