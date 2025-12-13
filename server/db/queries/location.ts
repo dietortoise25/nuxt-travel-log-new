@@ -52,3 +52,10 @@ export async function insertLocation(
 
   return created;
 }
+
+export async function getLocationsByUserId(userId: number) {
+  return db.query.location.findMany({
+    where: eq(location.userId, userId),
+    orderBy: (location, { desc }) => [desc(location.createdAt)],
+  });
+}
