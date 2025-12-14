@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 const isSidebarOpen = ref(true);
+const route = useRoute();
+const sibebarStore = useSibebarStore();
+const locationStore = useLocationStore();
 
 onMounted(() => {
-  const storedState = localStorage.getItem("isSidebarOpen");
-  if (storedState !== null) {
-    isSidebarOpen.value = storedState === "true";
+  isSidebarOpen.value = localStorage.getItem("isSidebarOpen") === "true";
+  if (route.path !== "/dashboard") {
+    locationStore.refresh();
   }
 });
 
@@ -18,7 +21,7 @@ function toggleSidebar() {
   <div class="flex-1 flex">
     <!-- side bar -->
     <div
-      class="bg-base-100 transition-all duration-300"
+      class="bg-base-100 transition-all duration-300 shrink-0"
       :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }"
     >
       <div
@@ -34,12 +37,33 @@ function toggleSidebar() {
         <SidebarButton :show-label="isSidebarOpen" label="Add Location" icon="tabler:square-plus" href="/dashboard/add" />
 
         <div class="divider" />
+
+        <div v-if="sibebarStore.loading" class="flex flex-col px-4 gap-2">
+          <div class="skeleton h-4 w-full" />
+          <div class="skeleton h-4 w-full" />
+        </div>
+
+        <div
+          v-if="!sibebarStore.loading && sibebarStore.sidebarItems.length"
+          class="flex flex-col"
+        >
+          <SidebarButton
+            v-for="item in sibebarStore.sidebarItems"
+            :key="item.id"
+            :show-label="isSidebarOpen"
+            :label="item.label"
+            :icon="item.icon"
+            :href="item.href"
+          />
+        </div>
+
+        <div class="divider" />
         <SidebarButton :show-label="isSidebarOpen" label="Sign Out" icon="tabler:logout" href="/sign-out" />
       </div>
     </div>
 
     <!-- main -->
-    <div class="flex-1">
+    <div class="flex-1 flex flex-col">
       <NuxtPage />
     </div>
   </div>

@@ -1,6 +1,9 @@
 <script lang="ts" setup>
-const { data, status } = await useFetch("/api/locations", {
-  lazy: true,
+const locationStore = useLocationStore();
+const { locations, status } = storeToRefs(locationStore);
+
+onMounted(() => {
+  locationStore.refresh();
 });
 
 function formatDate(timestamp: number) {
@@ -13,7 +16,7 @@ function formatDate(timestamp: number) {
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="p-4 shrink-0">
     <div class="flex items-center mb-6">
       <h2 class="text-2xl font-bold">
         My Locations
@@ -32,7 +35,7 @@ function formatDate(timestamp: number) {
     </div>
 
     <!-- Empty state -->
-    <div v-else-if="!data || data.length === 0" class="hero bg-base-200 rounded-lg p-12">
+    <div v-else-if="!locations || locations.length === 0" class="hero bg-base-200 rounded-lg p-12">
       <div class="hero-content text-center">
         <div>
           <Icon name="tabler:map-pin" size="48" class="mb-4 mx-auto text-base-content/60" />
@@ -51,9 +54,9 @@ function formatDate(timestamp: number) {
     </div>
 
     <!-- Locations cards -->
-    <div v-else class="flex flex-wrap mt-4 gap-2">
+    <div v-else class="flex flex-nowrap mt-4 gap-2 ">
       <div
-        v-for="location in data"
+        v-for="location in locations"
         :key="location.id"
         class="card bg-base-300 h-40 w-72 shadow-xl hover:shadow-2xl transition-shadow duration-300"
       >
@@ -69,6 +72,7 @@ function formatDate(timestamp: number) {
             {{ location.description }}
           </p>
         </div>
+
         <!-- Created date -->
         <div class="card-actions justify-end text-xs text-base-content/50 p-4 pt-0">
           <span class="flex items-center gap-1">
@@ -76,18 +80,6 @@ function formatDate(timestamp: number) {
             Created {{ formatDate(location.createdAt) }}
           </span>
         </div>
-
-        <!-- Card actions -->
-        <!-- <div class=" justify-end ">
-          <button class="btn btn-ghost btn-sm" @click="navigateTo(`/dashboard/locations/${location.slug}`)">
-            <Icon name="tabler:eye" size="16" />
-            View
-          </button>
-          <button class="btn btn-ghost btn-sm" @click="navigateTo(`/dashboard/locations/${location.slug}/edit`)">
-            <Icon name="tabler:edit" size="16" />
-            Edit
-          </button>
-        </div> -->
       </div>
     </div>
   </div>
