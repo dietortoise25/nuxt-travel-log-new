@@ -16,7 +16,7 @@ function formatDate(timestamp: number) {
 </script>
 
 <template>
-  <div class="p-4 shrink-0">
+  <div class="p-4">
     <div class="flex items-center mb-6">
       <h2 class="text-2xl font-bold">
         My Locations
@@ -38,7 +38,11 @@ function formatDate(timestamp: number) {
     <div v-else-if="!locations || locations.length === 0" class="hero bg-base-200 rounded-lg p-12">
       <div class="hero-content text-center">
         <div>
-          <Icon name="tabler:map-pin" size="48" class="mb-4 mx-auto text-base-content/60" />
+          <Icon
+            name="tabler:map-pin"
+            size="48"
+            class="mb-4 mx-auto text-base-content/60"
+          />
           <h3 class="text-xl font-semibold mb-2">
             No locations yet
           </h3>
@@ -54,16 +58,20 @@ function formatDate(timestamp: number) {
     </div>
 
     <!-- Locations cards -->
-    <div v-else class="flex flex-nowrap mt-4 gap-2 ">
+    <div v-else class="flex flex-nowrap mt-4 gap-2 overflow-auto">
       <div
         v-for="location in locations"
         :key="location.id"
-        class="card bg-base-300 h-40 w-72 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+        class="card bg-base-300 h-40 w-72 shadow-xl hover:shadow-2xl transition-shadow duration-300 shrink-0"
       >
         <div class="card-body">
-          <div class="flex items-start justify-between mb-2">
+          <div class="flex items-start justify-between">
             <h3 class="card-title text-lg">
-              <Icon name="tabler:map-pin" size="24" class="text-primary" />
+              <Icon
+                name="tabler:map-pin"
+                size="24"
+                class="text-primary"
+              />
               {{ location.name }}
             </h3>
           </div>
