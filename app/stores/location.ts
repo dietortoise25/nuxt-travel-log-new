@@ -4,6 +4,7 @@ export const useLocationStore = defineStore("useLocationStore", () => {
   });
 
   const sibebarStore = useSibebarStore();
+  const mapStore = useMapStore();
 
   effect(() => {
     if (data.value) {
@@ -13,6 +14,12 @@ export const useLocationStore = defineStore("useLocationStore", () => {
         label: location.name,
         icon: "tabler:map-pin-filled",
         href: "#",
+      }));
+      mapStore.mapPoints = data.value.map(location => ({
+        id: location.id,
+        label: location.name,
+        lat: location.lat,
+        long: location.long,
       }));
     }
     else {

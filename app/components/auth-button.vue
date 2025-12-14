@@ -5,7 +5,11 @@ const authStore = useAuthStore();
 <template>
   <ClientOnly>
     <div v-if="authStore.user && !authStore.loading " class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn m-1">
+      <div
+        tabindex="0"
+        role="button"
+        class="btn m-1"
+      >
         <div v-if="authStore.user.image" class="avatar">
           <div class="w-6 rounded-full">
             <img :src="authStore.user.image" :alt="authStore.user.name">
@@ -22,10 +26,19 @@ const authStore = useAuthStore();
         </li>
       </ul>
     </div>
-    <button v-else :disabled="authStore.loading" class="btn btn-accent" @click="authStore.signIn">
+    <button
+      v-else
+      :disabled="authStore.loading"
+      class="btn btn-accent"
+      @click="authStore.signIn"
+    >
       Sign In with Github
       <span v-if="authStore.loading" class="loading loading-spinner loading-md" />
-      <Icon v-else name="tabler:brand-github" size="24" />
+      <Icon
+        v-else
+        name="tabler:brand-github"
+        size="24"
+      />
     </button>
   </ClientOnly>
 </template>

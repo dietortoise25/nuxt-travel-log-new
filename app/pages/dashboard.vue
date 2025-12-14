@@ -29,12 +29,30 @@ function toggleSidebar() {
         :class="{ 'justify-end': isSidebarOpen, 'justify-center': !isSidebarOpen }"
         @click="toggleSidebar"
       >
-        <Icon v-if="isSidebarOpen" name="tabler:chevron-left" size="32" />
-        <Icon v-else name="tabler:chevron-right" size="32" />
+        <Icon
+          v-if="isSidebarOpen"
+          name="tabler:chevron-left"
+          size="32"
+        />
+        <Icon
+          v-else
+          name="tabler:chevron-right"
+          size="32"
+        />
       </div>
       <div class="flex flex-col">
-        <SidebarButton :show-label="isSidebarOpen" label="Locations" icon="tabler:map" href="/dashboard" />
-        <SidebarButton :show-label="isSidebarOpen" label="Add Location" icon="tabler:square-plus" href="/dashboard/add" />
+        <SidebarButton
+          :show-label="isSidebarOpen"
+          label="Locations"
+          icon="tabler:map"
+          href="/dashboard"
+        />
+        <SidebarButton
+          :show-label="isSidebarOpen"
+          label="Add Location"
+          icon="tabler:square-plus"
+          href="/dashboard/add"
+        />
 
         <div class="divider" />
 
@@ -58,14 +76,21 @@ function toggleSidebar() {
         </div>
 
         <div class="divider" />
-        <SidebarButton :show-label="isSidebarOpen" label="Sign Out" icon="tabler:logout" href="/sign-out" />
+        <SidebarButton
+          :show-label="isSidebarOpen"
+          label="Sign Out"
+          icon="tabler:logout"
+          href="/sign-out"
+        />
       </div>
     </div>
 
     <!-- main -->
-    <div class="flex-1 flex flex-col">
-      <NuxtPage />
-      <AppMap />
+    <div class="flex-1 overflow-auto">
+      <div class="flex flex-col size-full">
+        <NuxtPage class="shrink-0" />
+        <AppMap class="flex-1" />
+      </div>
     </div>
   </div>
 </template>

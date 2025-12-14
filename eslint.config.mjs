@@ -20,7 +20,7 @@ export default withNuxt(
     rules: {
       "vue/max-attributes-per-line": ["error", {
         singleline: {
-          max: 5,
+          max: 2,
         },
         multiline: {
           max: 1,

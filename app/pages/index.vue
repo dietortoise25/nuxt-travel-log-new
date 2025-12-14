@@ -13,7 +13,11 @@ const authStore = useAuthStore();
           Keep track of your adventures and explore new destinations with Travel Log, your personal travel companion.
         </p>
         <AuthButton v-if="!authStore.user" />
-        <NuxtLink v-else to="/dashboard" class="btn btn-primary">
+        <NuxtLink
+          v-else
+          to="/dashboard"
+          class="btn btn-primary"
+        >
           Go to Dashboard
         </NuxtLink>
       </div>
