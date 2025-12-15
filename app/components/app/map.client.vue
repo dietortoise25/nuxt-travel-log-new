@@ -3,6 +3,8 @@ import { CENTER_CHINA } from "#shared/utils/constants";
 
 const colorMode = useColorMode();
 const mapStore = useMapStore();
+// const locationStore = useLocationStore();
+// const { locations } = storeToRefs(locationStore);
 
 const style = computed(() => {
   return colorMode.value === "dark"
@@ -31,14 +33,34 @@ onMounted(() => {
         :coordinates="[item.long, item.lat]"
       >
         <template #marker>
-          <div class="tooltip tooltip-top" :data-tip="item.label">
+          <div
+            class="tooltip tooltip-top hover:cursor-pointer"
+            :class="{
+              'tooltip-open': mapStore.selectedPoint?.id === item.id,
+            }"
+            :data-tip="item.name"
+            @mouseenter="mapStore.selectedPointWithoutFlyTo(item)"
+            @mouseleave="mapStore.selectedPointWithoutFlyTo(null)"
+          >
             <Icon
               name="tabler:map-pin-filled"
               size="30"
-              class="text-secondary"
+              :class="{
+                'text-accent': mapStore.selectedPoint?.id === item.id,
+                'text-secondary': mapStore.selectedPoint?.id !== item.id,
+              }"
             />
           </div>
         </template>
+        <Mgl-popup>
+          <h3 class="text-xl">
+            {{ item.name }}
+          </h3>
+          <p v-if="item.description">
+            {{ item.description }}
+          </p>
+          <!-- <a href="#" @click.prevent="closePopup">Close popup</a> -->
+        </Mgl-popup>
       </MglMarker>
     </MglMap>
   </div>

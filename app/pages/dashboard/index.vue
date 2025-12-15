@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const locationStore = useLocationStore();
+const mapStore = useMapStore();
 const { locations, status } = storeToRefs(locationStore);
 
 onMounted(() => {
@@ -62,7 +63,13 @@ function formatDate(timestamp: number) {
       <div
         v-for="location in locations"
         :key="location.id"
-        class="card bg-base-300 h-40 w-72 shadow-xl hover:shadow-2xl transition-shadow duration-300 shrink-0"
+        class="card bg-base-300 h-40 w-72 mb-2 border-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 shrink-0 hover:cursor-pointer"
+        :class="{
+          'border-accent': location.id === mapStore.selectedPoint?.id,
+          'border-transparent': location.id !== mapStore.selectedPoint?.id,
+        }"
+        @mouseenter="mapStore.selectedPoint = location"
+        @mouseleave="mapStore.selectedPoint = null"
       >
         <div class="card-body">
           <div class="flex items-start justify-between">
