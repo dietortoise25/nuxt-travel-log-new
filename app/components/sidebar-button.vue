@@ -4,6 +4,7 @@ const props = defineProps<{
   label: string;
   icon: string;
   href?: string;
+  iconColor?: "text-accent" | "text-primary" | "text-secondary";
 }>();
 const route = useRoute();
 </script>
@@ -20,7 +21,11 @@ const route = useRoute();
       class="flex gap-2 p-2 hover:bg-base-300 hover:cursor-pointer flex-nowrap"
       :class="{ 'bg-base-200': route.path === props.href, 'justify-center': !showLabel, 'justify-start': showLabel }"
     >
-      <Icon :name="props.icon" size="24" />
+      <Icon
+        :name="props.icon"
+        size="24"
+        :class="iconColor"
+      />
       <Transition name="grow">
         <span v-if="showLabel">
           {{ props.label }}</span>
