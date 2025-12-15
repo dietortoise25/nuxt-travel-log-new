@@ -9,9 +9,16 @@ const router = useRouter();
 const loading = ref(false);
 const submitted = ref(false);
 const submitError = ref("");
-const { handleSubmit, errors, meta, setErrors } = useForm({
+const { handleSubmit, errors, meta, setErrors, setFieldValue, controlledValues } = useForm({
   validationSchema: toTypedSchema(InsertLocation),
+  initialValues: {
+    name: "",
+    description: "",
+    long: (CENTER_CHINA as [number, number])[0],
+    lat: (CENTER_CHINA as [number, number])[1],
+  },
 });
+const mapStore = useMapStore();
 
 const onSubmit = handleSubmit(async (values) => {
   try {
@@ -34,6 +41,29 @@ const onSubmit = handleSubmit(async (values) => {
   loading.value = false;
 });
 
+function formatNumber(value?: number) {
+  if (!value)
+    return 0;
+  return value.toFixed(5);
+}
+
+effect(() => {
+  if (mapStore.addedPoint) {
+    setFieldValue("long", mapStore.addedPoint.long);
+    setFieldValue("lat", mapStore.addedPoint.lat);
+  }
+});
+
+onMounted(() => {
+  mapStore.addedPoint = {
+    id: 1,
+    name: "AddedPoint",
+    description: "",
+    long: (CENTER_CHINA as [number, number])[0],
+    lat: (CENTER_CHINA as [number, number])[1],
+  };
+});
+
 onBeforeRouteLeave(() => {
   // 在离开当前页面之前执行的逻辑
   if (!submitted.value && meta.value.dirty) {
@@ -45,11 +75,12 @@ onBeforeRouteLeave(() => {
       return false; // 阻止导航
     }
   }
+  mapStore.addedPoint = null;
 });
 </script>
 
 <template>
-  <div class="container mx-auto max-w-md">
+  <div class="container mx-auto max-w-md p-4">
     <div class="my-4">
       <h1 class="text-lg font-semibold">
         Add Location
@@ -81,7 +112,7 @@ onBeforeRouteLeave(() => {
         :error="errors.description"
         :disabled="loading"
       />
-      <AppFormField
+      <!-- <AppFormField
         label="Latitude"
         name="lat"
         :error="errors.lat"
@@ -92,7 +123,16 @@ onBeforeRouteLeave(() => {
         name="long"
         :error="errors.long"
         :disabled="loading"
-      />
+      /> -->
+      <p>
+        Drag the marker <Icon name="tabler:map-pin-filled" class="text-warning" /> to your desired location
+      </p>
+      <p>
+        Or double click on the map.
+      </p>
+      <p class="text-xs text-gray-400">
+        Current location: {{ formatNumber(controlledValues.lat as number) }},{{ formatNumber(controlledValues.long as number) }}
+      </p>
 
       <div class="flex justify-end gap-2">
         <button
