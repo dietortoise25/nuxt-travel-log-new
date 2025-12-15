@@ -11,11 +11,14 @@ export type MapPoint = {
   description: string | null;
 } & LatLongItem;
 
+let bounds: LngLatBounds | null = null;
+const padding: number = 80;
+
 export const useMapStore = defineStore("useMapStore", () => {
   const mapPoints = ref<MapPoint[]>([]);
   const selectedPoint = ref<MapPoint | null>(null);
-  let bounds: LngLatBounds | null = null;
-  const padding: number = 80;
+  const addedPoint = ref<MapPoint | null>(null);
+
   const shouldFlyTo = ref(true);
 
   function selectedPointWithoutFlyTo(point: MapPoint | null) {
@@ -43,6 +46,8 @@ export const useMapStore = defineStore("useMapStore", () => {
     });
 
     effect(() => {
+      if (addedPoint.value)
+        return;
       if (selectedPoint.value) {
         if (shouldFlyTo.value) {
           map.map?.flyTo({
@@ -63,12 +68,25 @@ export const useMapStore = defineStore("useMapStore", () => {
         });
       }
     });
+
+    watch(addedPoint, (newValue, oldValue) => {
+      if (newValue && !oldValue) {
+        map.map?.flyTo({
+          center: [newValue.long, newValue.lat],
+          zoom: 6,
+          speed: 1,
+        });
+      }
+    }, {
+      immediate: true,
+    });
   }
 
   return {
     mapPoints,
-    init,
     selectedPoint,
+    addedPoint,
+    init,
     selectedPointWithoutFlyTo,
   };
 });

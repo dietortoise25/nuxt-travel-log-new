@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
+import type { LngLat } from "maplibre-gl";
+
 import { CENTER_CHINA } from "#shared/utils/constants";
 
 const colorMode = useColorMode();
@@ -14,6 +17,21 @@ const style = computed(() => {
 
 const zoom = 3;
 
+function updateAddedPoint(location: LngLat) {
+  if (mapStore.addedPoint) {
+    mapStore.addedPoint.lat = location.lat;
+    mapStore.addedPoint.long = location.lng;
+  }
+}
+
+function onDoubleClick(mglEvent: MglEvent<"dblclick">) {
+  // console.log(event.event.lngLat);
+  if (mapStore.addedPoint) {
+    mapStore.addedPoint.lat = mglEvent.event.lngLat.lat;
+    mapStore.addedPoint.long = mglEvent.event.lngLat.lng;
+  }
+}
+
 onMounted(() => {
   mapStore.init();
 });
@@ -25,8 +43,29 @@ onMounted(() => {
       :map-style="style"
       :center="CENTER_CHINA"
       :zoom="zoom"
+      @map:dblclick="onDoubleClick"
     >
       <MglNavigationControl />
+      <MglMarker
+        v-if="mapStore.addedPoint"
+        :coordinates="[mapStore.addedPoint.long, mapStore.addedPoint.lat]"
+        draggable
+        @update:coordinates="updateAddedPoint"
+      >
+        <template #marker>
+          <div
+            class="tooltip tooltip-open tooltip-top hover:cursor-pointer"
+            data-tip="drag me"
+          >
+            <Icon
+              name="tabler:map-pin-filled"
+              size="30"
+              class="text-warning"
+            />
+          </div>
+        </template>
+      </MglMarker>
+
       <MglMarker
         v-for="item in mapStore.mapPoints"
         :key="item.id"
