@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import type { NominatimResult } from "~~/shared/utils/zod-schema";
 import type { FetchError } from "ofetch";
 
 import { toTypedSchema } from "@vee-validate/zod";
+import getFetchErrorMessage from "#shared/utils/get-fetch-error-message";
 import { InsertLocation } from "~~/server/db/schema";
 
 const { $csrfFetch } = useNuxtApp();
@@ -36,7 +38,7 @@ const onSubmit = handleSubmit(async (values) => {
     if (error.data?.data) {
       setErrors(error.data?.data);
     }
-    submitError.value = error.data?.statusMessage || error.statusMessage || "An unknown error occurred.";
+    submitError.value = getFetchErrorMessage(error);
   }
   loading.value = false;
 });
@@ -45,6 +47,18 @@ function formatNumber(value?: number) {
   if (!value)
     return 0;
   return value.toFixed(5);
+}
+
+function searchResultSelected(result: NominatimResult) {
+  setFieldValue("name", result.display_name);
+  mapStore.addedPoint = {
+    id: 1,
+    name: "AddedPoint",
+    description: "",
+    long: Number(result.lon),
+    lat: Number(result.lat),
+    centerMap: true,
+  };
 }
 
 effect(() => {
@@ -124,15 +138,23 @@ onBeforeRouteLeave(() => {
         :error="errors.long"
         :disabled="loading"
       /> -->
-      <p>
-        Drag the marker <Icon name="tabler:map-pin-filled" class="text-warning" /> to your desired location
-      </p>
-      <p>
-        Or double click on the map.
-      </p>
       <p class="text-xs text-gray-400">
-        Current location: {{ formatNumber(controlledValues.lat as number) }},{{ formatNumber(controlledValues.long as number) }}
+        Current coordinates: {{ formatNumber(controlledValues.lat as number) }},{{ formatNumber(controlledValues.long as number) }}
       </p>
+      <div class="text-sm text-gray-400">
+        <p>To set the coordinates:</p>
+        <ul class="list-disc ml-4">
+          <li>
+            Drag the marker <Icon name="tabler:map-pin-filled" class="text-warning" /> on map.
+          </li>
+          <li>
+            Double click on the map.
+          </li>
+          <li>
+            Search for a location below.
+          </li>
+        </ul>
+      </div>
 
       <div class="flex justify-end gap-2">
         <button
@@ -159,5 +181,7 @@ onBeforeRouteLeave(() => {
         </button>
       </div>
     </form>
+    <div class="divider" />
+    <AppPlaceSearch @result-selected="searchResultSelected" />
   </div>
 </template>
