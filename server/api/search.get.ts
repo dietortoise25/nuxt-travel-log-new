@@ -2,12 +2,8 @@ import type { NominatimResult } from "#shared/utils/zod-schema";
 
 import { SearchSchema } from "#shared/utils/zod-schema";
 
-
-
-
 import defineAuthenticatedEventHandler from "../utils/define-authenticated-event-handler";
 import sendZodError from "../utils/send-zod-error";
-
 
 export default defineAuthenticatedEventHandler(
   defineCachedEventHandler(async (event) => {
