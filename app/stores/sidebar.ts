@@ -1,10 +1,4 @@
-export type SidebarItem = {
-  id: string;
-  label: string;
-  icon: string;
-  href: string;
-  location: MapPoint | null;
-};
+import type { SidebarItem } from "~~/shared/utils/types";
 
 export const useSibebarStore = defineStore("useSibebarStore", () => {
   const sidebarItems = ref<SidebarItem[]>([]);

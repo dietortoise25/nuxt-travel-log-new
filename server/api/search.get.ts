@@ -1,4 +1,4 @@
-import type { NominatimResult } from "#shared/utils/zod-schema";
+import type { NominatimResult } from "#shared/utils/types";
 
 import { SearchSchema } from "#shared/utils/zod-schema";
 

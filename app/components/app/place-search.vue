@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-import type { NominatimResult } from "#shared/utils/zod-schema";
+import type { NominatimResult } from "#shared/utils/types";
 import type { FetchError } from "ofetch";
 
 import { SearchSchema } from "#shared/utils/zod-schema";
 import getFetchErrorMessage from "~~/shared/utils/get-fetch-error-message";
-
-// import type { NominatimResult } from "~/lib/types";
 
 const emit = defineEmits<{
   resultSelected: [result: NominatimResult];

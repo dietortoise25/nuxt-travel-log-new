@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { NominatimResult } from "~~/shared/utils/zod-schema";
+import type { NominatimResult } from "~~/shared/utils/types";
 import type { FetchError } from "ofetch";
 
 import { toTypedSchema } from "@vee-validate/zod";
