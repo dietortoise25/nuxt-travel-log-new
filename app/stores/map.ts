@@ -1,16 +1,5 @@
 import type { LngLatBounds } from "maplibre-gl";
 
-export type LatLongItem = {
-  lat: number;
-  long: number;
-};
-
-export type MapPoint = {
-  id: number;
-  name: string;
-  description: string | null;
-} & LatLongItem;
-
 let bounds: LngLatBounds | null = null;
 const padding: number = 80;
 
@@ -42,6 +31,7 @@ export const useMapStore = defineStore("useMapStore", () => {
 
       map.map?.fitBounds(bounds, {
         padding,
+        maxZoom: 3,
       });
     });
 

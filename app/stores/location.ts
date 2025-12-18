@@ -8,21 +8,24 @@ export const useLocationStore = defineStore("useLocationStore", () => {
 
   effect(() => {
     if (data.value) {
+      const mapPoints: MapPoint[] = [];
+      const sidebarItems: SidebarItem[] = [];
+
+      data.value.forEach((location) => {
+        const mapPoint = createMapPointFromLocation(location);
+        sidebarItems.push({
+          id: `location-${location.id}`,
+          label: location.name,
+          icon: "tabler:map-pin-filled",
+          to: { name: "dashboard-location-slug", params: { slug: location.slug } },
+          mapPoint,
+        });
+        mapPoints.push(mapPoint);
+      });
+
       sibebarStore.loading = false;
-      sibebarStore.sidebarItems = data.value.map(location => ({
-        id: `location-${location.id}`,
-        label: location.name,
-        icon: "tabler:map-pin-filled",
-        href: "#",
-        location,
-      }));
-      mapStore.mapPoints = data.value.map(location => ({
-        id: location.id,
-        name: location.name,
-        lat: location.lat,
-        long: location.long,
-        description: location.description,
-      }));
+      sibebarStore.sidebarItems = sidebarItems;
+      mapStore.mapPoints = mapPoints;
     }
     else {
       sibebarStore.loading = status.value === "pending";

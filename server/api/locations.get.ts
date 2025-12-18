@@ -1,4 +1,4 @@
-import { getLocationsByUserId as findLocationsByUserId } from "../db/queries/location";
+import { findLocationsByUserId } from "../db/queries/location";
 import defineAuthenticatedEventHandler from "../utils/define-authenticated-event-handler";
 
 export default defineAuthenticatedEventHandler(async (event) => {

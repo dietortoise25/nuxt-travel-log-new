@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { isPointSelected } from "~~/shared/utils/map-points";
+
 const locationStore = useLocationStore();
 const mapStore = useMapStore();
 const { locations, status } = storeToRefs(locationStore);
@@ -17,7 +19,7 @@ function formatDate(timestamp: number) {
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="p-4 min-h-64">
     <div class="flex items-center mb-6">
       <h2 class="text-2xl font-bold">
         My Locations
@@ -60,15 +62,16 @@ function formatDate(timestamp: number) {
 
     <!-- Locations cards -->
     <div v-else class="flex flex-nowrap mt-4 gap-2 overflow-auto">
-      <div
+      <NuxtLink
         v-for="location in locations"
         :key="location.id"
         class="card bg-base-300 h-40 w-72 mb-2 border-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 shrink-0 hover:cursor-pointer"
+        :to="{ name: 'dashboard-location-slug', params: { slug: location.slug } }"
         :class="{
-          'border-accent': location.id === mapStore.selectedPoint?.id,
-          'border-transparent': location.id !== mapStore.selectedPoint?.id,
+          'border-accent': isPointSelected(location, mapStore.selectedPoint),
+          'border-transparent': !isPointSelected(location, mapStore.selectedPoint),
         }"
-        @mouseenter="mapStore.selectedPoint = location"
+        @mouseenter="mapStore.selectedPoint = createMapPointFromLocation(location)"
         @mouseleave="mapStore.selectedPoint = null"
       >
         <div class="card-body">
@@ -95,7 +98,7 @@ function formatDate(timestamp: number) {
             Created {{ formatDate(location.createdAt) }}
           </span>
         </div>
-      </div>
+      </NuxtLink>
     </div>
   </div>
 </template>

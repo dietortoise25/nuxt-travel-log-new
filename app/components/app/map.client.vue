@@ -3,6 +3,7 @@ import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
 import type { LngLat } from "maplibre-gl";
 
 import { CENTER_CHINA } from "#shared/utils/constants";
+import { isPointSelected } from "~~/shared/utils/map-points";
 
 const colorMode = useColorMode();
 const mapStore = useMapStore();
@@ -48,14 +49,14 @@ onMounted(() => {
       <MglNavigationControl />
       <MglMarker
         v-if="mapStore.addedPoint"
+        key="added-point"
         :coordinates="[mapStore.addedPoint.long, mapStore.addedPoint.lat]"
         draggable
-        class="z-50"
         @update:coordinates="updateAddedPoint"
       >
         <template #marker>
           <div
-            class="tooltip tooltip-open tooltip-top hover:cursor-pointer"
+            class="tooltip tooltip-open tooltip-top hover:cursor-pointer z-50"
             data-tip="drag me"
           >
             <Icon
@@ -76,7 +77,7 @@ onMounted(() => {
           <div
             class="tooltip tooltip-top hover:cursor-pointer"
             :class="{
-              'tooltip-open': mapStore.selectedPoint?.id === item.id,
+              'tooltip-open': isPointSelected(item, mapStore.selectedPoint),
             }"
             :data-tip="item.name"
             @mouseenter="mapStore.selectedPointWithoutFlyTo(item)"
@@ -86,8 +87,8 @@ onMounted(() => {
               name="tabler:map-pin-filled"
               size="30"
               :class="{
-                'text-accent': mapStore.selectedPoint?.id === item.id,
-                'text-secondary': mapStore.selectedPoint?.id !== item.id,
+                'text-accent': isPointSelected(item, mapStore.selectedPoint),
+                'text-secondary': !isPointSelected(item, mapStore.selectedPoint),
               }"
             />
           </div>
@@ -99,7 +100,16 @@ onMounted(() => {
           <p v-if="item.description">
             {{ item.description }}
           </p>
-          <!-- <a href="#" @click.prevent="closePopup">Close popup</a> -->
+          <div class="divider" />
+          <div class="flex justify-end">
+            <NuxtLink
+              v-if="item.to"
+              :to="item.to"
+              class="btn btn-sm btn-outline"
+            >
+              {{ item.toLabel }}
+            </NuxtLink>
+          </div>
         </Mgl-popup>
       </MglMarker>
     </MglMap>
