@@ -1,19 +1,12 @@
 import type { LngLatBounds } from "maplibre-gl";
 
-let bounds: LngLatBounds | null = null;
-const padding: number = 80;
+// import type { MapPoint } from "~/lib/types";
+import { CENTER_CHINA } from "#shared/utils/constants";
 
 export const useMapStore = defineStore("useMapStore", () => {
   const mapPoints = ref<MapPoint[]>([]);
   const selectedPoint = ref<MapPoint | null>(null);
   const addedPoint = ref<MapPoint & { centerMap?: boolean } | null>(null);
-
-  const shouldFlyTo = ref(true);
-
-  function selectedPointWithoutFlyTo(point: MapPoint | null) {
-    shouldFlyTo.value = false;
-    selectedPoint.value = point;
-  }
 
   async function init() {
     const { useMap } = await import ("@indoorequal/vue-maplibre-gl");
@@ -21,42 +14,35 @@ export const useMapStore = defineStore("useMapStore", () => {
 
     const map = useMap();
 
+    let bounds: LngLatBounds | null = null;
+    const padding: number = 80;
+
+    // 监听mapPoints数组
     effect(() => {
       const firstPoint = mapPoints.value[0];
-      if (!firstPoint)
+
+      // 如果没有第一个值，飞去默认中心点
+      if (!firstPoint) {
+        map.map?.flyTo({
+          center: CENTER_CHINA,
+          zoom: 2,
+        });
         return;
+      }
+
+      // 如果有值，设定地图边界bounds:LngLatBounds
       bounds = mapPoints.value.reduce((bounds, point) => {
         return bounds.extend([point.long, point.lat]);
-      }, new LngLatBounds([firstPoint.long, firstPoint.lat], [firstPoint.long, firstPoint.lat]));
+      }, new LngLatBounds(
+        [firstPoint.long, firstPoint.lat],
+        [firstPoint.long, firstPoint.lat],
+      ));
 
+      // 然后fitBounds
       map.map?.fitBounds(bounds, {
         padding,
-        maxZoom: 3,
+        maxZoom: 10,
       });
-    });
-
-    effect(() => {
-      if (addedPoint.value)
-        return;
-      if (selectedPoint.value) {
-        if (shouldFlyTo.value) {
-          map.map?.flyTo({
-            center: [selectedPoint.value.long, selectedPoint.value.lat],
-            // zoom: 6,
-            speed: 1,
-            // curve: 1,
-            // easing(t) {
-            //   return t;
-            // },
-          });
-        }
-        shouldFlyTo.value = true;
-      }
-      else if (bounds) {
-        map.map?.fitBounds(bounds, {
-          padding,
-        });
-      }
     });
 
     watch(addedPoint, (newValue, oldValue) => {
@@ -77,6 +63,6 @@ export const useMapStore = defineStore("useMapStore", () => {
     selectedPoint,
     addedPoint,
     init,
-    selectedPointWithoutFlyTo,
+    // selectedPointWithoutFlyTo,
   };
 });
