@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { isPointSelected } from "~~/shared/utils/map-points";
+import { isPointSelected } from "#shared/utils/map-points";
 
 const locationStore = useLocationStore();
 const mapStore = useMapStore();
-const { locations, status } = storeToRefs(locationStore);
+const { locations, locationsStatus: status } = storeToRefs(locationStore);
 
 onMounted(() => {
-  locationStore.refresh();
+  locationStore.refreshLocations();
 });
 
 function formatDate(timestamp: number) {

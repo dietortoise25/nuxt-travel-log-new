@@ -1,15 +1,25 @@
 <script lang="ts" setup>
 const route = useRoute();
-const mapStore = useMapStore();
-const { slug } = route.params;
-const { data: location, status, error } = await useFetch(`/api/locations/${slug}`, {
-  lazy: true,
-});
-effect(() => {
-  if (location.value) {
-    mapStore.mapPoints = [location.value];
-  }
-});
+const locationStore = useLocationStore();
+const {
+  currentLocation: location,
+  currentLocationStatus: status,
+  currentLocationError: error,
+} = storeToRefs(locationStore);
+
+const loading = computed(() => status.value === "pending");
+const errorMessage = computed(() => error.value?.statusMessage);
+
+// onMounted(() => {
+//   locationStore.refreshCurrentLocation();
+// });
+
+// console.log("onBeforeRouteUpdate:", locationUrlWithSlug);
+// onBeforeRouteUpdate((to) => {
+//   if (to.name === "dashboard-location-slug") {
+//     locationStore.refreshCurrentLocation();
+//   }
+// });
 </script>
 
 <template>
@@ -17,7 +27,12 @@ effect(() => {
     <div v-if="status === 'pending'">
       <div class="loading" />
     </div>
-    <div v-if="location && status !== 'pending'">
+    <div v-if="errorMessage && !loading" class="alert alert-error">
+      <h2 class="text-lg">
+        {{ errorMessage }}
+      </h2>
+    </div>
+    <div v-if="route.name === 'dashboard-location-slug' && location && !loading">
       <h2 class="text-xl">
         {{ location.name }}
       </h2>
@@ -34,10 +49,8 @@ effect(() => {
         </button>
       </div>
     </div>
-    <div v-if="error && status !== 'pending'" class="alert alert-error">
-      <h2 class="text-lg">
-        {{ error.statusMessage }}
-      </h2>
+    <div v-if="route.name !== 'dashboard-location-slug'">
+      <NuxtPage />
     </div>
   </div>
 </template>
